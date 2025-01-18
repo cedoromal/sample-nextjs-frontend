@@ -1,0 +1,8 @@
+.openapi-generator-ignore
+apis/PersonsApi.ts
+apis/index.ts
+index.ts
+models/CsvUploadDetails.ts
+models/Person.ts
+models/index.ts
+runtime.ts
