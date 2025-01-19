@@ -1,0 +1,6 @@
+services:
+  app:
+    build: https://github.com/cedoromal/sample-nextjs-frontend.git
+    ports:
+      - "3000:3000" # Feel free to change the ports as needed
+    env_file: ".env.local"
