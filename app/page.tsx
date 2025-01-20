@@ -166,49 +166,53 @@ export default function Home() {
   }, []);
   // -------------------------------------------------------------------------
   const uploadFiles = useCallback(<T extends File>(acceptedFiles: T[]) => {
-    toast.promise(
-      async () => {
-        const reader = new FileReader();
+    const reader = new FileReader();
 
-        reader.readAsText(acceptedFiles[0]);
+    reader.readAsText(acceptedFiles[0]);
 
-        const csvUploadDetails = await personsApi.apiPersonsCsvGet();
+    reader.onload = () => {
+      toast.promise(
+        async () => {
+          const csvUploadDetails = await personsApi.apiPersonsCsvGet();
 
-        const csvUploadPath = csvUploadDetails.uploadLink!.replace(
-          process.env.NEXT_PUBLIC_R2_BASE_URL!,
-          "",
-        );
+          const csvUploadPath = csvUploadDetails.uploadLink!.replace(
+            process.env.NEXT_PUBLIC_R2_BASE_URL!,
+            "",
+          );
 
-        await fetch(`${apiContext.apiConfig.basePath}${csvUploadPath}`, {
-          method: "PUT",
-          headers: { "Content-Type": "text/csv" },
-          body: reader.result,
-        });
+          await fetch(`${apiContext.apiConfig.basePath}${csvUploadPath}`, {
+            method: "PUT",
+            headers: { "Content-Type": "text/csv" },
+            body: reader.result,
+          });
 
-        return await personsApi.apiPersonsCsvPost({
-          body: csvUploadDetails.objName!,
-        });
-      },
-      {
-        loading: <Alert title={"Uploading CSV..."} />,
-        success: () => {
-          apiPersonsGetResponse.refetch();
-
-          return <Alert color="success" title={"Successfully uploaded CSV"} />;
+          return await personsApi.apiPersonsCsvPost({
+            body: csvUploadDetails.objName!,
+          });
         },
-        error: () => {
-          return <Alert color="danger" title={"Error occurred"} />;
+        {
+          loading: <Alert title={"Uploading CSV..."} />,
+          success: () => {
+            apiPersonsGetResponse.refetch();
+
+            return (
+              <Alert color="success" title={"Successfully uploaded CSV"} />
+            );
+          },
+          error: () => {
+            return <Alert color="danger" title={"Error occurred"} />;
+          },
         },
-      },
-      {
-        icon: <></>,
-        style: {
-          background: "transparent",
-          boxShadow: "none",
-          padding: 0,
+        {
+          icon: <></>,
+          style: {
+            background: "transparent",
+            boxShadow: "none",
+            padding: 0,
+          },
         },
-      },
-    );
+      );
+    };
   }, []);
 
   return (
